@@ -1,0 +1,24 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+#package files
+target
+*.xml.bak
+*.iml
+.idea
+
+#diff files
+*.diff
+
+release.sh
+
+.classpath
+.project
+.settings/
+/core/*.iml
+.gitignore
+src/test/
