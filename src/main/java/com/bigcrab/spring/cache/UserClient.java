@@ -29,6 +29,9 @@ public class UserClient {
         getUser(1L);
         getUser(20L);
         getUser(101L);
+
+        userService.deleteUser(20L);
+
         getUser(1L);
         getUser(20L);
         getUser(101L);
