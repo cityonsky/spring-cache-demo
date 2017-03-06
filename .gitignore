@@ -21,4 +21,3 @@ release.sh
 .settings/
 /core/*.iml
 .gitignore
-src/test/
