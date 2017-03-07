@@ -15,6 +15,8 @@
 
 
 ## 快速上手
+[github 代码地址](https://github.com/cityonsky/spring-cache-demo)
+
 一、Maven 配置
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -50,9 +52,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd 
+       http://www.springframework.org/schema/context 
        http://www.springframework.org/schema/context/spring-context.xsd">
 
        <context:component-scan base-package="com.bigcrab.spring.cache"/>
@@ -276,3 +278,70 @@ user id = 20, user name = user_20
 === start getting user who's id is 101 ===
 user id = 101, user name = null
 ```
+
+## 条件缓存
+Srping Cache 框架允许通过 condition 或者 unless 字段增加一些缓存控制策略。
+
+- @Cacheable 将在执行方法之前(#result还拿不到返回值)判断 condition，如果返回 true，则查缓存：
+```
+@Cacheable(value = "user", key = "#id", condition = "#id lt 10")  
+public User conditionFindById(final Long id)  
+```
+
+- @CachePut 将在执行完方法后（#result就能拿到返回值了）判断 condition，如果返回 true，则放入缓存：
+```
+@CachePut(value = "user", key = "#id", condition = "#result.username ne 'zhang'")  
+public User conditionSave(final User user)   
+```
+
+- @CachePut 将在执行完方法后（#result就能拿到返回值了）判断 unless，如果返回 false，则放入缓存:
+```
+@CachePut(value = "user", key = "#user.id", unless = "#result.username eq 'zhang'")  
+public User conditionSave2(final User user)   
+```
+
+- @CacheEvict， beforeInvocation=false表示在方法执行之后调用（#result能拿到返回值了）；且判断condition，如果返回true，则移除缓存：
+```
+@CacheEvict(value = "user", key = "#user.id", beforeInvocation = false, condition = "#result.username ne 'zhang'")  
+public User conditionDelete(final User user)   
+```
+
+## 组合注解
+可以使用 @Caching 把多个缓存注解组合在一起，如下：
+```
+@Caching(
+            put = {
+                    @CachePut(value = "user", key = "#user.id"),
+                    @CachePut(value = "user_name", key = "#user.name")
+            }
+    )
+    public User addUser(User user) {
+        users.put(user.getId(), user);
+        return user;
+    }
+```
+
+也可以自己定义一个注解，这样使用的地方就会简洁很多：
+```
+@Caching(
+        put = {
+                @CachePut(value = "user", key = "#user.id"),
+                @CachePut(value = "user_name", key = "#user.name")
+        }
+)
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface CacheUser {
+}
+```
+
+addUser 就改为：
+```
+@CacheUser
+    public User addUser(User user) {
+        users.put(user.getId(), user);
+        return user;
+    }
+```
+
