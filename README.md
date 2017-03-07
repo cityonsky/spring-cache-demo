@@ -290,19 +290,19 @@ public User conditionFindById(final Long id)
 
 - @CachePut 将在执行完方法后（#result就能拿到返回值了）判断 condition，如果返回 true，则放入缓存：
 ```
-@CachePut(value = "user", key = "#id", condition = "#result.username ne 'zhang'")  
+@CachePut(value = "user", key = "#id", condition = "#result.name ne 'foo'")  
 public User conditionSave(final User user)   
 ```
 
 - @CachePut 将在执行完方法后（#result就能拿到返回值了）判断 unless，如果返回 false，则放入缓存:
 ```
-@CachePut(value = "user", key = "#user.id", unless = "#result.username eq 'zhang'")  
-public User conditionSave2(final User user)   
+@CachePut(value = "user", key = "#user.id", unless = "#result.name eq 'foo'")  
+public User conditionSave(final User user)   
 ```
 
 - @CacheEvict， beforeInvocation=false表示在方法执行之后调用（#result能拿到返回值了）；且判断condition，如果返回true，则移除缓存：
 ```
-@CacheEvict(value = "user", key = "#user.id", beforeInvocation = false, condition = "#result.username ne 'zhang'")  
+@CacheEvict(value = "user", key = "#user.id", beforeInvocation = false, condition = "#result.name ne 'foo'")  
 public User conditionDelete(final User user)   
 ```
 
