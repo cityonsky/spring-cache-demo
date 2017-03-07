@@ -7,6 +7,7 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -42,7 +43,7 @@ public class AppConfig implements CachingConfigurer {
 
     @Override
     public KeyGenerator keyGenerator() {
-        return null;
+        return new SimpleKeyGenerator();
     }
 
     @Override

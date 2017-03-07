@@ -21,7 +21,7 @@ public class UserServiceTest {
 
     @org.junit.Test
     public void testAddUser() throws Exception {
-        addUsers();
+        userService.addUser(new User(1L, "User_1"));
 
         TrackingLogic trackingLogic = new TrackingLogic();
         userService.setTrackingLogic(trackingLogic);
@@ -52,11 +52,45 @@ public class UserServiceTest {
         Assert.assertEquals(TrackingLogic.INVALID_ID, trackingLogic.getActionUserId());
     }
 
-    private void addUsers() {
-        for (long i = 0; i < 100; ++i) {
-            String name = String.format("User_%d", i);
-            userService.addUser(new User(i, name));
-        }
+    @org.junit.Test
+    public void testModifyUser() throws Exception {
+        userService.addUser(new User(1L, "User_1"));
+
+        // 第一次获取用户，从 userService 中生成
+        User user = userService.getUser(1L);
+        Assert.assertEquals("User_1", user.getName());
+
+        // 更改用户名字后，从缓存中也应该获取最新版本的数据
+        User u = new User(1L, "foo");
+        userService.modifyUser(u);
+        user = userService.getUser(1L);
+        Assert.assertEquals("foo", user.getName());
+    }
+
+    @org.junit.Test
+    public void testCaching() throws Exception {
+        userService.addUser2(new User(1L, "User_1"));
+
+        User user = userService.getUser(1L);
+        Assert.assertEquals("User_1", user.getName());
+        Assert.assertEquals(1L, user.getId());
+
+        user = userService.getUserByName("User_1");
+        Assert.assertEquals("User_1", user.getName());
+        Assert.assertEquals(1L, user.getId());
+    }
+
+    @org.junit.Test
+    public void testCaching2() throws Exception {
+        userService.addUser3(new User(1L, "User_1"));
+
+        User user = userService.getUser(1L);
+        Assert.assertEquals("User_1", user.getName());
+        Assert.assertEquals(1L, user.getId());
+
+        user = userService.getUserByName("User_1");
+        Assert.assertEquals("User_1", user.getName());
+        Assert.assertEquals(1L, user.getId());
     }
 
 }
